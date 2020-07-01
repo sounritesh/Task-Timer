@@ -13,7 +13,7 @@ object TasksContract {
 
 //    an object inside an object is like a companion object but the companion keyword
 //    is not applicable inside an object
-    object columns {
+    object Columns {
 //    Tasks fields
         const val ID = BaseColumns._ID // we can also simply use "_id", however this constant is provided by google through BaseColumns interface
         const val TASK_NAME = "Name"
