@@ -43,6 +43,35 @@ internal class AppDatabase private constructor (context: Context): SQLiteOpenHel
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        TODO("Not yet implemented")
+        Log.d(TAG, "onUpgrade: starts")
+        when (oldVersion) {
+            1 -> {
+//                upgrade logic from version 1
+            }
+            else -> throw IllegalStateException("onUpgrade() with unknown newVersion: $newVersion")
+        }
     }
+
+//    companion object {
+//        This function uses a double checked lock algorithm
+//        If the instance is not null, the instance is returned
+//        Else the variable is locked
+//        and the function block  that follows is executed
+//        wherein again null check is performed and if null, a new instance of AppDatabase is returned
+//        This code however may introduce some bugs so we instead use a class to make a singleton class for us
+//        this is attributed to the fact that android is a multithreaded framework and hence to keep check on all thread is difficult
+//        Even experts sometimes fail to get multithreaded programming wrong
+
+//        @Volatile
+//        private var instance: AppDatabase? = null
+//
+//        fun getInstance(context: Context): AppDatabase =
+//            instance?: synchronized(this) {
+//                instance ?: AppDatabase(context).also { instance = it }
+//            }
+
+
+//    }
+
+    companion object: SingletonHolder<AppDatabase, Context>(::AppDatabase)
 }
