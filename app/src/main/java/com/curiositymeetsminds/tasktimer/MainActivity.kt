@@ -18,14 +18,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val appDatabase = AppDatabase.getInstance(this)
-        val db = appDatabase.readableDatabase
-
-        val cursor = db.rawQuery("SELECT * FROM tasks", null)
+        val cursor = contentResolver.query(TasksContract.CONTENT_URI, null, null, null, null)
         Log.d(TAG, "******************************************************")
 
         cursor.use {
-            while (it.moveToNext()) {
+            while (it!!.moveToNext()) {
                 with(it) {
                     val id = getLong(0)
                     val name = getString(1)
@@ -35,6 +32,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, result)
                 }
             }
+
         }
 
         Log.d(TAG, "******************************************************")
