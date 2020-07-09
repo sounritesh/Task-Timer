@@ -18,16 +18,16 @@ private const val TAG = "AppProvider"
 const val CONTENT_AUTHORITY = "com.curiositymeetsminds.tasktimer.provider"
 
 //These constants can be any number not necessarily the ones specified here
-private const val TASKS = 100;
-private const val TASKS_ID = 101;
+private const val TASKS = 100
+private const val TASKS_ID = 101
 
-private const val TIMINGS = 200;
-private const val TIMINGS_ID = 201;
+private const val TIMINGS = 200
+private const val TIMINGS_ID = 201
 
 private const val TASK_DURATIONS = 400
 private const val TASK_DURATIONS_ID = 401
 
-val CONTENT_AUTHORITY_URI = Uri.parse("content://$CONTENT_AUTHORITY")
+val CONTENT_AUTHORITY_URI: Uri = Uri.parse("content://$CONTENT_AUTHORITY")
 
 class AppProvider: ContentProvider() {
 
@@ -43,6 +43,8 @@ class AppProvider: ContentProvider() {
 
         matcher.addURI(CONTENT_AUTHORITY, TasksContract.TABLE_NAME, TASKS)
         matcher.addURI(CONTENT_AUTHORITY, "${TasksContract.TABLE_NAME}/#", TASKS_ID)
+        matcher.addURI(CONTENT_AUTHORITY, TimingsContract.TABLE_NAME, TIMINGS)
+        matcher.addURI(CONTENT_AUTHORITY, "${TimingsContract.TABLE_NAME}/#", TIMINGS_ID)
 
         return matcher
     }
@@ -53,7 +55,24 @@ class AppProvider: ContentProvider() {
     }
 
     override fun getType(uri: Uri): String? {
-        TODO("Not yet implemented")
+//        this function is not necessary in our case but this is how it would look where it is required
+//        the data types we return are custom MIME types
+//        they mean nothing to any app other than ours
+        Log.d(TAG, "getType: called with URI - $uri")
+        val match = uriMatcher.match(uri)
+        Log.d(TAG, "getType: match is $match")
+
+        return when(match) {
+            TASKS -> TasksContract.CONTENT_TYPE
+
+            TASKS_ID -> TasksContract.CONTENT_ITEM_TYPE
+
+            TIMINGS -> TimingsContract.CONTENT_TYPE
+
+            TIMINGS_ID -> TimingsContract.CONTENT_ITEM_TYPE
+
+            else -> throw IllegalArgumentException("Unknown URI: $uri")
+        }
     }
 
     override fun query(
@@ -64,7 +83,7 @@ class AppProvider: ContentProvider() {
         sortOrder: String?
     ): Cursor? {
 
-        Log.d(TAG, "query: called with uri $uri")
+        Log.d(TAG, "query: called with URI - $uri")
         val match = uriMatcher.match(uri)
         Log.d(TAG, "query: match is $match")
 
@@ -77,9 +96,18 @@ class AppProvider: ContentProvider() {
 
             TASKS_ID -> {
                 queryBuilder.tables = TasksContract.TABLE_NAME
-                val taskID = TasksContract.getId(uri)
+                val taskId = TasksContract.getId(uri)
                 queryBuilder.appendWhere("${TasksContract.Columns.ID} = ")
-                queryBuilder.appendWhereEscapeString("$taskID")
+                queryBuilder.appendWhereEscapeString("$taskId")
+            }
+
+            TIMINGS -> queryBuilder.tables = TimingsContract.TABLE_NAME
+
+            TIMINGS_ID -> {
+                queryBuilder.tables = TimingsContract.TABLE_NAME
+                val timingsId = TimingsContract.getId(uri)
+                queryBuilder.appendWhere("${TimingsContract.Columns.ID} = ")
+                queryBuilder.appendWhereEscapeString("$timingsId")
             }
 
             else -> throw IllegalArgumentException("Unknown URI: $uri")
