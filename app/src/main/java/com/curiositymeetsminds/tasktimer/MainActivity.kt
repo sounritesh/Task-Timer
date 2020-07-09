@@ -18,17 +18,21 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val cursor = contentResolver.query(TasksContract.CONTENT_URI, null, null, null, null)
+        val sortColumn = TasksContract.Columns.TASK_SORT_ORDER
+        val projection = arrayOf(TasksContract.Columns.TASK_NAME, TasksContract.Columns.TASK_SORT_ORDER)
+
+//        val cursor = contentResolver.query(TasksContract.CONTENT_URI, projection, null, null, sortColumn)
+        val cursor = contentResolver.query(TasksContract.buildUriFromId(2), projection, null, null, sortColumn)
         Log.d(TAG, "******************************************************")
 
         cursor.use {
             while (it!!.moveToNext()) {
                 with(it) {
-                    val id = getLong(0)
-                    val name = getString(1)
-                    val description = getString(2)
-                    val sortOrder = getString(3)
-                    val result = "ID: $id, Name: $name, Description: $description, Sort Order: $sortOrder"
+//                    val id = getLong(0)
+                    val name = getString(0)
+//                    val description = getString(2)
+                    val sortOrder = getString(1)
+                    val result = "ID:, Name: $name, Description:, Sort Order: $sortOrder"
                     Log.d(TAG, result)
                 }
             }
